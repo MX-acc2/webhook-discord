@@ -1,0 +1,131 @@
+/* Reset some basic styles for consistency across browsers */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-attachment: fixed;
+}
+
+.container {
+    width: 80%;
+    max-width: 800px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header h1 {
+    color: #007BFF;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.description h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+button {
+    background: linear-gradient(135deg, #007BFF, #00c6ff);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 25px;
+    margin: 10px 0;
+    transition: background 0.3s, transform 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0056b3, #0088cc);
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+button::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.5s;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+}
+
+button:active::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+#snowflakeContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    z-index: 9999;
+    user-select: none;
+    pointer-events: none;
+    animation: snowflakes-fall 10s linear infinite;
+}
+
+@keyframes snowflakes-fall {
+    0% {
+        top: -10px;
+    }
+    100% {
+        top: 100vh;
+    }
+}

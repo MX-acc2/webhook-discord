@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        /* Reset some basic styles for consistency across browsers */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-attachment: fixed;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #007BFF;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .textinput {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5em;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            text-align: right;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 5px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #007BFF, #00c6ff);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 5px;
+            transition: background 0.3s, transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #0056b3, #0088cc);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.5s;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        button:active::after {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+
+        .wide {
+            width: 100%;
+        }
+
+        .tall {
+            height: 100px;
+        }
+
+        /* Light/Dark Mode Button */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: background 0.5s, transform 0.5s;
+            border: 2px solid #007BFF;
+            font-size: 24px;
+        }
+
+        .theme-switch.light-mode {
+            background: #fff;
+        }
+
+        .theme-switch.dark-mode {
+            background: #333;
+        }
+
+        .theme-switch::before {
+            content: '🌞';
+            transition: opacity 0.5s;
+        }
+
+        .theme-switch.dark-mode::before {
+            content: '🌜';
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background: #2c2f33;
+            color: #dcddde;
+        }
+
+        .container.dark-mode {
+            background: #202225;
+            color: #dcddde;
+        }
+
+        .textinput.dark-mode {
+            background: #2c2f33;
+            color: #dcddde;
+            border: 2px solid #444;
+        }
+
+        button.dark-mode {
+            background: linear-gradient(135deg, #0056b3, #0088cc);
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Theme switch button -->
+    <div class="theme-switch light-mode" onclick="toggleTheme()"></div>
+
+    <div class="container">
+        <h1>HTML Calculator</h1>
+        <form name="form">
+            <input name="textinput" class="textinput" />
+        </form>
+        <table>
+            <tr>
+                <td><button onclick="clean()">C</button></td>
+                <td><button onclick="back()">DEL</button></td>
+                <td><button onclick="insert('*')">*</button></td>
+                <td><button onclick="insert('/')">/</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="insert(1)">1</button></td>
+                <td><button onclick="insert(2)">2</button></td>
+                <td><button onclick="insert(3)">3</button></td>
+                <td><button onclick="insert('+')">+</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="insert(4)">4</button></td>
+                <td><button onclick="insert(5)">5</button></td>
+                <td><button onclick="insert(6)">6</button></td>
+                <td><button onclick="insert('-')">-</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="insert(7)">7</button></td>
+                <td><button onclick="insert(8)">8</button></td>
+                <td><button onclick="insert(9)">9</button></td>
+                <td rowspan="2" class="tall"><button onclick="calculate()">=</button></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="wide"><button onclick="insert(0)">0</button></td>
+                <td><button onclick="insert('.')">.</button></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function insert(num) {
+            document.form.textinput.value = document.form.textinput.value + num;
+        }
+
+        function clean() {
+            // Clean input area
+            document.form.textinput.value = "";
+        }
+
+        function back() {
+            var text = document.form.textinput.value;
+            // Remove last character from string
+            document.form.textinput.value = text.substring(0, text.length - 1);
+        }
+
+        function calculate() {
+            // Eval calculation
+            var text = document.form.textinput.value;
+            try {
+                document.form.textinput.value = eval(text);
+            } catch {
+                document.form.textinput.value = "Error";
+            }
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const container = document.querySelector('.container');
+            const textinput = document.querySelector('.textinput');
+            const themeSwitch = document.querySelector('.theme-switch');
+
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                container.classList.remove('light-mode');
+                container.classList.add('dark-mode');
+                textinput.classList.remove('light-mode');
+                textinput.classList.add('dark-mode');
+                themeSwitch.classList.remove('light-mode');
+                themeSwitch.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                container.classList.remove('dark-mode');
+                container.classList.add('light-mode');
+                textinput.classList.remove('dark-mode');
+                textinput.classList.add('light-mode');
+                themeSwitch.classList.remove('dark-mode');
+                themeSwitch.classList.add('light-mode');
+            }
+        }
+    </script>
+</body>
+</html>

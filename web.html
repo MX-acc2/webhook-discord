@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Webhook System</title>
+    <style>
+        /* Background styles */
+        body {
+            background: url('hq720.png') no-repeat center center fixed;
+            background-size: cover;
+            transition: background-position 0.05s;
+            overflow: hidden;
+        }
+
+        /* Snowflake animation */
+        @keyframes snowflake {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        .snowflake {
+            position: absolute;
+            color: #fff;
+            opacity: 0.8;
+            user-select: none;
+            pointer-events: none;
+            animation: snowflake linear infinite;
+        }
+
+        /* Button styles */
+        button {
+            background: linear-gradient(135deg, #007BFF, #00c6ff);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 10px;
+            transition: background 0.3s, transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #0056b3, #0088cc);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.5s;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        button:active::after {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+
+        /* Dropdown styles */
+        .dropbtn {
+            background: linear-gradient(135deg, #007BFF, #00c6ff);
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 10px;
+            transition: background 0.3s, transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropbtn:hover, .dropbtn:focus {
+            background: linear-gradient(135deg, #0056b3, #0088cc);
+            transform: scale(1.05);
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            overflow: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 10px;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .show {
+            display: block;
+        }
+
+        /* Theme switch button */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: background 0.5s, transform 0.5s;
+            border: 2px solid #007BFF;
+            font-size: 24px;
+            z-index: 1000;
+        }
+
+        .theme-switch.light-mode {
+            background: #fff;
+        }
+
+        .theme-switch.dark-mode {
+            background: #333;
+        }
+
+        .theme-switch::before {
+            content: '🌞';
+            transition: opacity 0.5s;
+        }
+
+        .theme-switch.dark-mode::before {
+            content: '🌜';
+        }
+
+        /* Page themes */
+        body.light-mode {
+            background: url('hq720.png') no-repeat center center fixed;
+            background-size: cover;
+            transition: background 0.5s, color 0.5s;
+            color: #333;
+        }
+
+        body.dark-mode {
+            background: url('hq720.png') no-repeat center center fixed;
+            background-size: cover;
+            transition: background 0.5s, color 0.5s;
+            color: #dcddde;
+        }
+
+        /* Container styles */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(35, 39, 42, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin: 100px auto;
+            text-align: center;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            text-align: center;
+            position: relative;
+            margin-top: 30px;
+        }
+
+        .info-box {
+            background: #2f3136;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin: 0 auto;
+            max-width: 500px;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .info-box:hover {
+            background: #383c41;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .info-content {
+            display: none;
+            background: #202225;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .info-box.active .info-content {
+            display: block;
+        }
+
+        /* Snowflakes position adjustment */
+        .snowflake {
+            top: -20px; /* Start snowflakes from above the viewport */
+        }
+
+        /* Login with Discord button */
+        .login-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #7289da;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            z-index: 1000;
+        }
+
+        /* Welcome message */
+        @keyframes welcomeAnimation {
+            0% {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+        }
+
+        .welcome-message {
+            display: none;
+            text-align: center;
+            font-size: 24px;
+            color: #fff;
+            position: relative;
+            width: 100%;
+            margin-top: 20px;
+            animation: welcomeAnimation 2s ease-in-out;
+        }
+
+        .emoji {
+            font-size: 32px;
+        }
+
+        /* Star particles */
+        .star-particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: star-fall 0.6s linear;
+        }
+
+        @keyframes star-fall {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Theme switch button -->
+    <div class="theme-switch light-mode" onclick="toggleTheme()"></div>
+
+    <!-- Login with Discord button -->
+    <button class="login-button" onclick="loginWithDiscord()">Login with Discord</button>
+
+    <!-- Welcome message -->
+    <div id="welcomeMessage" class="welcome-message">
+        Welcome <span id="username"></span>! <span class="emoji">🎉</span><span class="emoji">😊</span><span class="emoji">✨</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Discord Webhook System</h1>
+        </header>
+        <section class="description">
+            <div class="info-box" onclick="toggleInfo()">
+                <div class="info-header">
+                    <h2>About the System</h2>
+                    <span>&#9660;</span>
+                </div>
+                <div class="info-content">
+                    <p>
+                        The Discord Webhook System allows you to send messages and embeds to a Discord channel through webhooks. You can customize your messages with embeds that include titles, descriptions, colors, and more.
+                    </p>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button onclick="dropdown1()" class="dropbtn">Navigate</button>
+                <div id="myDropdown" class="dropdown-content">
+                    <a href="webhook.html">Webhook</a>
+                    <a href="Calculator.html">Calculator</a>
+                    <a href="tran.html">Translator</a>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div id="snowflakeContainer"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Snowflakes
+            const snowflakeContainer = document.getElementById('snowflakeContainer');
+            const snowflakeCount = 100;
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.innerHTML = '❄';
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                snowflake.style.fontSize = `${Math.random() * 10 + 10}px`;
+                snowflake.style.top = `-${Math.random() * 100}px`;
+                snowflake.style.animation = `snowflake ${Math.random() * 10 + 5}s linear infinite`;
+                snowflakeContainer.appendChild(snowflake);
+            }
+
+            // Welcome message
+            const params = new URLSearchParams(window.location.search);
+            const username = params.get('username');
+
+            if (username) {
+                const welcomeMessage = document.getElementById('welcomeMessage');
+                const usernameSpan = document.getElementById('username');
+                usernameSpan.textContent = username;
+                welcomeMessage.style.display = 'block';
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                }, 2000);
+            }
+        });
+
+        function loginWithDiscord() {
+            // Discord OAuth2 login simulation
+            const username = prompt('Please enter your Discord username:');
+            if (username) {
+                window.location.href = `?username=${username}`;
+            }
+        }
+
+        function toggleInfo() {
+            const infoBox = document.querySelector('.info-box');
+            infoBox.classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeSwitch = document.querySelector('.theme-switch');
+
+            body.classList.toggle('light-mode');
+            body.classList.toggle('dark-mode');
+            themeSwitch.classList.toggle('light-mode');
+            themeSwitch.classList.toggle('dark-mode');
+        }
+
+        function dropdown1() {
+            document.getElementById("myDropdown").classList.toggle("show");
+            createStarParticles(event.clientX, event.clientY);
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        function createStarParticles(x, y) {
+            const starParticleCount = 20;
+            for (let i = 0; i < starParticleCount; i++) {
+                const starParticle = document.createElement('div');
+                starParticle.classList.add('star-particle');
+                starParticle.style.left = `${x}px`;
+                starParticle.style.top = `${y}px`;
+                starParticle.style.animationDelay = `${Math.random() * 0.5}s`;
+                document.body.appendChild(starParticle);
+
+                starParticle.addEventListener('animationend', () => {
+                    starParticle.remove();
+                });
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.pageX * -1 / 50);
+            const moveY = (e.pageY * -1 / 50);
+            document.body.style.backgroundPosition = `${moveX}px ${moveY}px`;
+        });
+    </script>
+</body>
+</html>

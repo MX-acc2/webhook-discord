@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Discord Webhook Sender</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #2c2f33;
+            color: #dcddde;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: #23272a;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #7289da;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group, .input-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #99aab5;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #2f3136;
+            color: #dcddde;
+        }
+
+        .form-group input {
+            height: 40px;
+        }
+
+        .form-group textarea {
+            height: 100px;
+        }
+
+        .form-group button,
+        .input-group button {
+            background: #7289da;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .form-group button:hover,
+        .input-group button:hover {
+            background: #5b6eae;
+            transform: scale(1.05);
+        }
+
+        .form-group button:active,
+        .input-group button:active {
+            transform: scale(0.95);
+        }
+
+        .embed-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .embed {
+            background: #36393f;
+            padding: 15px;
+            border-left: 5px solid #7289da;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .embed .title {
+            color: #7289da;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .embed .description {
+            font-size: 1em;
+        }
+
+        .embed img {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .send-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .preview {
+            overflow-y: auto;
+            flex-grow: 1;
+            background: #2f3136;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .embed-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .embed-line input {
+            margin-right: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #2f3136;
+            color: #dcddde;
+        }
+
+        .embed-line button {
+            background: #f04747;
+        }
+
+        .embed-line button:hover {
+            background: #d43f3f;
+        }
+
+        .icon {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enhanced Discord Webhook Sender</h1>
+        <div class="form-group">
+            <label for="webhook-url">Webhook URL</label>
+            <input type="text" id="webhook-url" placeholder="Enter your webhook URL here">
+        </div>
+        <div class="form-group">
+            <label for="message-content">Message</label>
+            <textarea id="message-content" placeholder="Type your message here..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Embed</label>
+            <div class="input-group">
+                <input type="color" id="embed-color" value="#7289da">
+                <input type="text" id="embed-title" placeholder="Embed Title">
+                <input type="text" id="embed-description" placeholder="Embed Description">
+                <input type="text" id="embed-thumbnail" placeholder="Embed Thumbnail URL">
+                <input type="text" id="embed-image" placeholder="Embed Image URL">
+                <button onclick="addEmbed()"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" class="icon" alt="Add">Add Embed</button>
+            </div>
+            <div id="embed-lines-container"></div>
+        </div>
+        <div class="embed-container">
+            <label class="embed-label">Embeds Preview</label>
+            <div id="embed-preview" class="preview"></div>
+        </div>
+        <div class="send-buttons">
+            <button onclick="sendEmbed()"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/filled-sent.png" class="icon" alt="Send">Send Embed</button>
+        </div>
+    </div>
+    <script>
+        let embedLinesCount = 0;
+
+        function addEmbed() {
+            const embedColor = document.getElementById('embed-color').value;
+            const embedTitle = document.getElementById('embed-title').value;
+            const embedDescription = document.getElementById('embed-description').value;
+            const embedThumbnail = document.getElementById('embed-thumbnail').value;
+            const embedImage = document.getElementById('embed-image').value;
+
+            const embed = document.createElement('div');
+            embed.classList.add('embed');
+            embed.style.borderColor = embedColor;
+            embed.innerHTML = `
+                <div class="title">${embedTitle}</div>
+                <div class="description">${embedDescription}</div>
+                ${embedThumbnail ? `<img src="${embedThumbnail}" alt="Thumbnail">` : ''}
+                <div class="embed-lines" id="embed-lines-${embedLinesCount}">
+                </div>
+                ${embedImage ? `<img src="${embedImage}" alt="Embed Image">` : ''}
+                <button onclick="addLine(${embedLinesCount})"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" class="icon" alt="Add Line">Add Line</button>
+            `;
+            document.getElementById('embed-preview').appendChild(embed);
+
+            embedLinesCount++;
+        }
+
+        function addLine(embedIndex) {
+            const embedLines = document.getElementById(`embed-lines-${embedIndex}`);
+            const embedLine = document.createElement('div');
+            embedLine.classList.add('embed-line');
+            embedLine.innerHTML = `
+                <input type="text" placeholder="Field Title">
+                <input type="text" placeholder="Field Value">
+                <button onclick="removeLine(this)"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/delete.png" class="icon" alt="Remove">Remove</button>
+            `;
+            embedLines.appendChild(embedLine);
+        }
+
+        function removeLine(button) {
+            button.parentElement.remove();
+        }
+
+        function sendEmbed() {
+            const webhookURL = document.getElementById('webhook-url').value;
+            const embeds = [];
+            const embedContainers = document.querySelectorAll('.embed');
+
+            embedContainers.forEach((embedContainer, index) => {
+                const color = embedContainer.style.borderColor;
+                const title = embedContainer.querySelector('.title').textContent;
+                const description = embedContainer.querySelector('.description').textContent;
+                const fields = [];
+                const embedLines = document.getElementById(`embed-lines-${index}`).children;
+
+                for (let embedLine of embedLines) {
+                    const fieldTitle = embedLine.querySelector('input:nth-child(1)').value;
+                    const fieldValue = embedLine.querySelector('input:nth-child(2)').value;
+                    fields.push({
+                        name: fieldTitle,
+                        value: fieldValue,
+                        inline: false
+                    });
+                }
+
+                const thumbnail = embedContainer.querySelector('img[alt="Thumbnail"]');
+                const image = embedContainer.querySelector('img[alt="Embed Image"]');
+
+                embeds.push({
+                    title,
+                    description,
+                    color: parseInt(color.replace('#', ''), 16),
+                    fields,
+                    thumbnail: thumbnail ? { url: thumbnail.src } : undefined,
+                    image: image ? { url: image.src } : undefined
+                });
+            });
+
+            if (!webhookURL) {
+                alert('Please enter a webhook URL');
+                return;
+            }
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ embeds }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Embed sent successfully!');
+                } else {
+                    alert('Failed to send embed. Please check the webhook URL and try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error sending embed:', error);
+                alert('An error occurred while sending the embed.');
+            });
+        }
+    </script>
+</body>
+</html>
